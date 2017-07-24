@@ -2,31 +2,102 @@
 <html>
 	<head>
 		<title>Sports Leagues</title>
+		{% load staticfiles %}
+		<link rel="stylesheet" type="text/css" href="{% static 'leagues/css/style.css' %}">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$('#title').text($('option:selected').text());
+
+				$('#question').change(function(){
+					// submit the form as soon as option selected
+					//console.log('selection made');
+					$('form').submit();
+				})
+				make_article = function(classname, id_val){
+					return '<article class="'+classname+'" id="'+id_val+'"></article>'
+				}
+				display_results = function(res){
+					$('#leagues').children().remove();
+
+					leagues = res.leagues
+					for(i in leagues){
+						league = leagues[i];
+						// console.log(league.name);
+						$('#leagues').append(make_article('league', league.id));
+						$league = $('.league[id='+league.id+']');
+						$league.append('<h2>'+league.name+'</h2>');
+						$league.append('<article class="teams"></article>');
+						$team_list = $league.children('.teams');
+						teams = league.teams;
+						// console.log('teams', teams);
+						for(j in teams){
+							team = teams[j];
+							$team_list.append(make_article('team', team.id));
+							players = team.players;
+							$team = $('.team[id='+team.id+']');
+							$team.append('<h4>'+team.location+' '+team.team_name+'</h4>');
+							$team.append('<ul></ul>');
+							$player_list = $team.children('ul');
+							for(k in players){
+								player = players[k];
+								$player_list.append('<li>'+player.first_name+' '+player.last_name+'</li>')
+							}
+						}
+						
+						
+					}
+					$('#title').text($('option:selected').text())
+				}
+				$('form').submit(function(){
+					$.ajax({
+						url: '/get-results/',
+						data: $(this).serialize(),
+						success: function(res){display_results(res)},
+						method: 'POST'
+					})
+					//$(this).preventDefault();
+					return false;
+				})
+				$('form').submit(); // trigger a submit on page load
+			})
+		</script>
 	</head>
 	<body>
-		<h1>Leagues</h1>
-		<ol>
-			{% for league in leagues %}
-				<li>{{league.name}}</li>
-			{% empty %}
-				<p>No leagues found.  Try <code>python manage.py loaddata data.json</code>, or, if that doesn't work, going <a href="{% url 'make_data' %}">here</a> (but be prepared to wait).</p>
-			{% endfor %}
-		</ol>
-		<h1>Teams</h1>
-		<ol>
-			{% for team in teams %}
-				<li>{{team.location}} {{team.team_name}}</li>
-			{% empty %}
-				<p>No teams found.  Try <code>python manage.py loaddata data.json</code>, or, if that doesn't work, going <a href="{% url 'make_data' %}">here</a> (but be prepared to wait).</p>
-			{% endfor %}
-		</ol>
-		<h1>Players</h1>
-		<ol>
-			{% for player in players %}
-				<li>{{player.first_name}} {{player.last_name}}</li>
-			{% empty %}
-				<p>No teams found.  Try <code>python manage.py loaddata data.json</code>, or, if that doesn't work, going <a href="{% url 'make_data' %}">here</a> (but be prepared to wait).</p>
-			{% endfor %}
-		</ol>
+		<header>
+			<form action='#' method='POST'>
+				{% csrf_token %}
+				<select name='question' id='question'>
+					<option value="0">All Sports Leagues</option>
+					<option value="1">All Baseball Leagues</option>
+					<option value="2">All Womens' Leagues</option>
+					<option value="3">Any Hockey Leagues</option>
+					<option value="4">All Non-Football Leagues</option>
+					<option value="5">All Conference Leagues</option>
+					<option value="6">All Atlantic Leagues</option>
+					<option value="7">All Dallas Teams</option>
+					<option value="8">All Teams called Raptors</option>
+					<option value="9">All Teams where location has "City"</option>
+					<option value="10">All Teams starting with "T"</option>
+					<option value="11">Teams sorted by Location</option>
+					<option value="12">Teams sorted by Name in reverse</option>
+					<option value="13"> Players with Last Name "Cooper"</option>
+					<option value="14">Players with First Name "Joshua"</option>
+					<option value="15">Players with Last Name "Cooper" except Joshua Cooper</option>
+					<option value="16">Players with First Name Alexander or Wyatt</option>
+				</select>
+				<!--<input type="submit" value="View Results">-->
+			</form>
+			
+		</header>
+		
+
+		<h1 id='title'></h1>
+		<section id="leagues">
+
+		</section>
+		
+		
+		
 	</body>
 </html>

@@ -5,7 +5,7 @@ Clone this repo for the CodingDojo Sports ORM assignments in the Django Level 2 
 
 When you `python manage.py runserver` and naviate to localhost:8000, you should see a list of leagues, teams, and players.  Modify `apps/leagues/views.py` and/or `apps/leagues/templates/leagues/index.html` to change the displayed list.
 
-###Questions
+### Questions
 
 We are asked to retrieve the results of [these](level_1.md) searches (view the linked doc for expected output).
 
@@ -16,7 +16,7 @@ I edited the code to categorize the players by team and league, as in the follow
 
 ### Filter based on league
 
-![baseball](/doc\baseball.png)
+![baseball](doc/baseball.png)
 
 ### Filter based on team
 
